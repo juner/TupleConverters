@@ -7,7 +7,7 @@
     <PathMap>$(RepoRoot)=.</PathMap>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)'=='Debug'">
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)'=='Debug' and '$(TargetFramework)' == 'net50'">
     <Exec Command="dotnet tool restore"/>
     <Exec Command="dotnet tool run dotnet-format" />
   </Target>
