@@ -11,7 +11,7 @@ namespace TupleConverters.WPF
     /// <summary>
     /// inject any position Command Argument.
     /// </summary>
-    public class CommandArgumentInjector : IMultiValueConverter
+    public class CommandArgumentInjectConverter : IMultiValueConverter
     {
         public object Convert(object?[] Values, Type TargetType, object Parameter, CultureInfo Culture)
         {
