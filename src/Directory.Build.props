@@ -1,0 +1,17 @@
+<Project>
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<Copyright>MIT</Copyright>
+		<PackageProjectUrl>https://github.com/junersproject/TupleConverters</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/junersproject/TupleConverters.git</RepositoryUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props','$(MSBuildThisFileDirectory)../'))"  />
+</Project>

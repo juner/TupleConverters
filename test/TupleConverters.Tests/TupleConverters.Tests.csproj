@@ -14,7 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\TupleConverters\TupleConverters.csproj" />
+		<ProjectReference Include="..\..\src\TupleConverters\TupleConverters.csproj" />
 	</ItemGroup>
 
 </Project>
