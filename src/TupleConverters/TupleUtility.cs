@@ -32,7 +32,7 @@ namespace TupleConverters
         {
             return (Tuple)To(typeof(Tuple), Value);
         }
-        public static object To(Type TupleType, IEnumerable<object?> Values, bool NoThrow = false)
+        public static object To(Type TupleType, IEnumerable<object?> Values)
         {
 #if ITUPLE_NOTSUPPORT
             var Info = TupleType.GetTypeInfo();
@@ -45,8 +45,6 @@ namespace TupleConverters
             var Parameter = Values.Take(7);
             if (GenericArguments.Length == 8)
                 Parameter = Parameter.Append(To(GenericArguments[7], Values.Skip(7)));
-            else if (!NoThrow && GenericArguments.Length != (Values is object?[] _Values ? _Values.Length : Values.Count()))
-                throw new ArgumentException($"Type Argument length:{GenericArguments.Length} is not Value length:{Values.Count()}", nameof(Values));
             return
 #if ITUPLE_NOTSUPPORT
 #else
@@ -54,7 +52,29 @@ namespace TupleConverters
 #endif
             Constructor.Invoke(Parameter.ToArray());
         }
-        public static Type MakeTupleType(IEnumerable<Type> Types) => (Types is Type[] __Types ? __Types.Length : Types.Count()) switch
+        /// <summary>
+        /// GetTypeArray from <see cref="TupleType"/> 
+        /// </summary>
+        /// <param name="TupleType"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> GetTypes(Type TupleType)
+        {
+            if (!TupleType.IsTuple() && !TupleType.IsValueTuple())
+                yield break;
+#if ITUPLE_NOTSUPPORT
+            var Info = TupleType.GetTypeInfo();
+            var GenericArguments = Info.GetGenericArguments();
+#else
+            var GenericArguments = TupleType.GetGenericArguments();
+#endif
+            foreach (var type in GenericArguments.Take(7))
+                yield return type;
+            if (GenericArguments.Length < 8)
+                yield break;
+            foreach (var type in GetTypes(GenericArguments[7]))
+                yield return type;
+        }
+        public static Type MakeTupleType(IEnumerable<Type> Types) => (Types is Type[] __Types ? __Types.Length : Types.Take(8).Count()) switch
         {
             0 => throw new ArgumentOutOfRangeException(nameof(Types) + " is 1 or later length support.", nameof(Types)),
             1 => typeof(Tuple<>).MakeGenericType(Types is Type[] _Types ? _Types : Types.ToArray()),
@@ -66,7 +86,7 @@ namespace TupleConverters
             7 => typeof(Tuple<,,,,,,>).MakeGenericType(Types is Type[] _Types ? _Types : Types.ToArray()),
             _ => typeof(Tuple<,,,,,,,>).MakeGenericType(Types.Take(7).Append(MakeTupleType(Types.Skip(7))).ToArray()),
         };
-        public static Type MakeValueTupleType(IEnumerable<Type> Types) => (Types is Type[] __Types ? __Types.Length : Types.Count()) switch
+        public static Type MakeValueTupleType(IEnumerable<Type> Types) => (Types is Type[] __Types ? __Types.Length : Types.Take(8).Count()) switch
         {
             0 => throw new ArgumentOutOfRangeException(nameof(Types) + " is 1 or later length support.", nameof(Types)),
             1 => typeof(ValueTuple<>).MakeGenericType(Types is Type[] _Types ? _Types : Types.ToArray()),
@@ -300,7 +320,7 @@ namespace TupleConverters
             }
         }
 #else
-        internal static IEnumerable<object?> GetEnumerable(this ITuple Source)
+        public static IEnumerable<object?> GetEnumerable(this ITuple Source)
         {
             for (var i = 0; i < Source.Length; i++)
                 yield return Source[i];
