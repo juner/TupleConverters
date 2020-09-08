@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;netcoreapp2.0;net45;net461;net47;net48;netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.1;netcoreapp2.0;net45;net461;net47;net48;netstandard1.0;netstandard2.0</TargetFrameworks>
 		<IsPackable>true</IsPackable>
 		<Authors>junersproject</Authors>
-	    <Company>-</Company>
+		<Company>-</Company>
 		<Title>Tuple Converter</Title>
 		<PackageTags>Tuple;ValueTuple</PackageTags>
 		<Description></Description>
@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="System.ValueTuple" />
+		<PackageReference Include="System.Reflection" />
 	</ItemGroup>
 
 </Project>

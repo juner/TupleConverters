@@ -1,9 +1,10 @@
-﻿#if NET45 || NET461 || NET47 || NETSTANDARD2_0
+﻿#if NET45 || NET461 || NET47 || NETSTANDARD1_0 || NETSTANDARD2_0
 #define ITUPLE_NOTSUPPORT
 #endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 #if !ITUPLE_NOTSUPPORT
 using System.Runtime.CompilerServices;
 #endif
@@ -33,8 +34,14 @@ namespace TupleConverters
         }
         public static object To(Type TupleType, IEnumerable<object?> Values, bool NoThrow = false)
         {
+#if ITUPLE_NOTSUPPORT
+            var Info = TupleType.GetTypeInfo();
+            var GenericArguments = Info.GetGenericArguments();
+            var Constructor = Info.DeclaredConstructors.First(v => v.IsPublic);
+#else
             var GenericArguments = TupleType.GetGenericArguments();
             var Constructor = TupleType.GetConstructor(GenericArguments)!;
+#endif
             var Parameter = Values.Take(7);
             if (GenericArguments.Length == 8)
                 Parameter = Parameter.Append(To(GenericArguments[7], Values.Skip(7)));
@@ -73,9 +80,10 @@ namespace TupleConverters
         };
         public static bool IsTuple(this Type Tuple)
         {
-            if (!Tuple.IsGenericType)
+            var Info = Tuple.GetTypeInfo();
+            if (!Info.IsGenericType)
                 return false;
-            if (!Tuple.IsClass)
+            if (!Info.IsClass)
                 return false;
 #if ITUPLE_NOTSUPPORT
             var OpenType = Tuple.GetGenericTypeDefinition();
@@ -86,16 +94,17 @@ namespace TupleConverters
                 || OpenType == typeof(Tuple<,,,,>)
                 || OpenType == typeof(Tuple<,,,,,>)
                 || OpenType == typeof(Tuple<,,,,,,>)
-                || (OpenType == typeof(Tuple<,,,,,,,>) && IsTuple(Tuple.GetGenericArguments()[7]));
+                || (OpenType == typeof(Tuple<,,,,,,,>) && IsTuple(Info.GetGenericArguments()[7]));
 #else
             return typeof(ITuple).IsAssignableFrom(Tuple);
 #endif
         }
         public static bool IsValueTuple(this Type Tuple)
         {
-            if (!Tuple.IsGenericType)
+            var Info = Tuple.GetTypeInfo();
+            if (!Info.IsGenericType)
                 return false;
-            if (!Tuple.IsValueType)
+            if (!Info.IsValueType)
                 return false;
 #if ITUPLE_NOTSUPPORT
             var OpenType = Tuple.GetGenericTypeDefinition();
@@ -106,7 +115,7 @@ namespace TupleConverters
                 || OpenType == typeof(ValueTuple<,,,,>)
                 || OpenType == typeof(ValueTuple<,,,,,>)
                 || OpenType == typeof(ValueTuple<,,,,,,>)
-                || (OpenType == typeof(ValueTuple<,,,,,,,>) && IsTuple(Tuple.GetGenericArguments()[7]));
+                || (OpenType == typeof(ValueTuple<,,,,,,,>) && IsTuple(Info.GetGenericArguments()[7]));
 #else
             return typeof(ITuple).IsAssignableFrom(Tuple);
 #endif
@@ -120,10 +129,19 @@ namespace TupleConverters
             var Type = Source.GetType();
 
 #if ITUPLE_NOTSUPPORT
+
+#if NETSTANDARD1_0
+            var Info = Type.GetTypeInfo();
+            if (Info.IsValueType)
+                return Source.GetValueTupleEnumerable();
+            if (Info.IsClass)
+                return Source.GetTupleEnumerable();
+#else
             if (Type.IsValueType)
                 return Source.GetValueTupleEnumerable();
             if (Type.IsClass)
                 return Source.GetTupleEnumerable();
+#endif
 #else
             if (Source is ITuple Tuple)
                 return Tuple.GetEnumerable();
@@ -138,72 +156,75 @@ namespace TupleConverters
             return GetEnumerable(Values.GetType(), Values);
             static IEnumerable<object?> GetEnumerable(Type Type, object? Source)
             {
-                var GenericArguments = Type.GetGenericArguments().Length;
+                var Info = Type.GetTypeInfo();
+                var GenericArguments = (Info.IsGenericTypeDefinition ? Info.GenericTypeParameters : Info.GenericTypeArguments).Length;
+
                 if (GenericArguments == 1)
                 {
-                    yield return Type.GetField(nameof(ValueTuple<int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int>.Item1)).GetValue(Source);
                 }
                 else if (GenericArguments == 2)
                 {
-                    yield return Type.GetField(nameof(ValueTuple<int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int>.Item2)).GetValue(Source);
                 }
                 else if (GenericArguments == 3)
                 {
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int>.Item3)).GetValue(Source);
                 }
                 else if (GenericArguments == 4)
                 {
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int>.Item4)).GetValue(Source);
                 }
                 else if (GenericArguments == 5)
                 {
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int>.Item4)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int>.Item5)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int>.Item5)).GetValue(Source);
                 }
                 else if (GenericArguments == 6)
                 {
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int>.Item4)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int>.Item5)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int>.Item6)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int>.Item5)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int>.Item6)).GetValue(Source);
                 }
                 else if (GenericArguments == 7)
                 {
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item4)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item5)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item6)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item7)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item5)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item6)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int>.Item7)).GetValue(Source);
                 }
                 else if (GenericArguments == 8)
                 {
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item4)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item5)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item6)).GetValue(Source);
-                    yield return Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item7)).GetValue(Source);
-                    var Rest = Type.GetField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Rest)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item5)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item6)).GetValue(Source);
+                    yield return Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Item7)).GetValue(Source);
+                    var Rest = Info.GetDeclaredField(nameof(ValueTuple<int, int, int, int, int, int, int, int>.Rest)).GetValue(Source);
                     foreach (var r in GetEnumerable(Rest.GetType(), Rest))
                         yield return r;
                 }
                 yield break;
             }
         }
+        internal static Type[] GetGenericArguments(this TypeInfo Info) => Info.IsGenericTypeDefinition ? Info.GenericTypeParameters : Info.GenericTypeArguments;
         internal static IEnumerable<object?> GetTupleEnumerable(this object? Values)
         {
             if (Values is null)
@@ -211,66 +232,67 @@ namespace TupleConverters
             return GetEnumerable(Values.GetType(), Values);
             static IEnumerable<object?> GetEnumerable(Type Type, object? Source)
             {
-                var GenericArguments = Type.GetGenericArguments().Length;
+                var Info = Type.GetTypeInfo();
+                var GenericArguments = Info.GetGenericArguments().Length;
                 if (GenericArguments == 1)
                 {
-                    yield return Type.GetProperty(nameof(Tuple<int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int>.Item1)).GetValue(Source);
                 }
                 else if (GenericArguments == 2)
                 {
-                    yield return Type.GetProperty(nameof(Tuple<int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int>.Item2)).GetValue(Source);
                 }
                 else if (GenericArguments == 3)
                 {
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int>.Item3)).GetValue(Source);
                 }
                 else if (GenericArguments == 4)
                 {
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int>.Item4)).GetValue(Source);
                 }
                 else if (GenericArguments == 5)
                 {
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int>.Item4)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int>.Item5)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int>.Item5)).GetValue(Source);
                 }
                 else if (GenericArguments == 6)
                 {
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int>.Item4)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int>.Item5)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int>.Item6)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int>.Item5)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int>.Item6)).GetValue(Source);
                 }
                 else if (GenericArguments == 7)
                 {
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item4)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item5)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item6)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item7)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item5)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item6)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int>.Item7)).GetValue(Source);
                 }
                 else if (GenericArguments == 8)
                 {
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item1)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item2)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item3)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item4)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item5)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item6)).GetValue(Source);
-                    yield return Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item7)).GetValue(Source);
-                    var Rest = Type.GetProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Rest)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item1)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item2)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item3)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item4)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item5)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item6)).GetValue(Source);
+                    yield return Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Item7)).GetValue(Source);
+                    var Rest = Info.GetDeclaredProperty(nameof(Tuple<int, int, int, int, int, int, int, int>.Rest)).GetValue(Source);
                     foreach (var r in GetEnumerable(Rest.GetType(), Rest))
                         yield return r;
                 }
