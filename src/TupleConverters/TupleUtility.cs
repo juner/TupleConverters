@@ -135,7 +135,7 @@ namespace TupleConverters
                 || OpenType == typeof(ValueTuple<,,,,>)
                 || OpenType == typeof(ValueTuple<,,,,,>)
                 || OpenType == typeof(ValueTuple<,,,,,,>)
-                || (OpenType == typeof(ValueTuple<,,,,,,,>) && IsTuple(Info.GetGenericArguments()[7]));
+                || (OpenType == typeof(ValueTuple<,,,,,,,>) && IsValueTuple(Info.GetGenericArguments()[7]));
 #else
             return typeof(ITuple).IsAssignableFrom(Tuple);
 #endif
@@ -144,7 +144,7 @@ namespace TupleConverters
         internal static IEnumerable<object?> GetEnumerable(this object? Source)
         {
             if (Source is null)
-                throw new ArgumentNullException($"{nameof(Source)} is null", nameof(Source));
+                return Enumerable.Empty<object?>();
 
             var Type = Source.GetType();
 
@@ -166,7 +166,7 @@ namespace TupleConverters
             if (Source is ITuple Tuple)
                 return Tuple.GetEnumerable();
 #endif
-            throw new NotSupportedException($"{nameof(Source)} is not Tuple Type ( Tuple<> or ValueTuple<>)");
+            return Enumerable.Empty<object?>();
         }
 #if ITUPLE_NOTSUPPORT
         internal static IEnumerable<object?> GetValueTupleEnumerable(this object? Values)

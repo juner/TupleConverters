@@ -100,6 +100,7 @@ namespace TupleConverters.Tests
             {
                 yield return FromTest((1, "2"), new object?[] { 1, "2" });
                 yield return FromTest(Tuple.Create(1, "2"), new object?[] { 1, "2" });
+                yield return FromTest(1, new object?[0]);
                 static object?[] FromTest(object? Source, object?[] Expected)
                     => new object?[] { Source, Expected };
             }
@@ -108,7 +109,7 @@ namespace TupleConverters.Tests
         [DynamicData(nameof(FromTestData))]
         public void FromTest(object? Source, object?[] Expected)
             => CollectionAssert.AreEqual(Expected, From(Source));
-        static IEnumerable<object?[]> GetTypesTestData
+        public  static IEnumerable<object?[]> GetTypesTestData
         {
             get
             {
@@ -124,6 +125,15 @@ namespace TupleConverters.Tests
         [TestMethod]
         [DynamicData(nameof(GetTypesTestData))]
         public void GetTypesTest(Type TupleType, Type[] Expected)
-            => CollectionAssert.AreEqual(Expected, GetTypes(TupleType).ToArray());
+        {
+            Console.WriteLine(nameof(Expected) + ":");
+            foreach (var e in Expected)
+                Console.WriteLine(e);
+            var Actual = GetTypes(TupleType).ToArray();
+            Console.WriteLine(nameof(Actual) + ":");
+            foreach (var a in Actual)
+                Console.WriteLine(a);
+            CollectionAssert.AreEqual(Expected, Actual);
+        }
     }
 }
