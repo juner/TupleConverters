@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TupleConverters.WPF", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TupleConverters.WPF.Tests", "test\TupleConverters.WPF.Tests\TupleConverters.WPF.Tests.csproj", "{01410224-24B2-4A35-8D94-D8A54FFA4074}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TupleConverters.WPF.Sample", "sample\TupleConverters.WPF.Sample\TupleConverters.WPF.Sample.csproj", "{17191475-46C9-4341-B898-2A63DA328A2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{01410224-24B2-4A35-8D94-D8A54FFA4074}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01410224-24B2-4A35-8D94-D8A54FFA4074}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01410224-24B2-4A35-8D94-D8A54FFA4074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17191475-46C9-4341-B898-2A63DA328A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17191475-46C9-4341-B898-2A63DA328A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17191475-46C9-4341-B898-2A63DA328A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17191475-46C9-4341-B898-2A63DA328A2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
