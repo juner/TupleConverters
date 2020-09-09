@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using TupleConverters;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using static TupleConverters.TupleUtility;
+using System.Linq;
 
 namespace TupleConverters.Tests
 {
@@ -33,7 +35,7 @@ namespace TupleConverters.Tests
             get
             {
                 yield return MakeTupleTypeTest(new Type[] { typeof(int), typeof(string) }, typeof(Tuple<int, string>));
-                
+
                 static object?[] MakeTupleTypeTest(IEnumerable<Type> Types, Type Expected)
                     => new object?[] { Types, Expected };
             }
@@ -50,7 +52,7 @@ namespace TupleConverters.Tests
                 // ValueTuple pattern 1-7
                 yield return MakeValueTupleTypeTest(new Type[] { typeof(int), typeof(string) }, typeof((int, string)));
                 // nested ValueTuple pattern 8 -
-                yield return MakeValueTupleTypeTest(new Type[] { typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string) }, typeof((int, string,int, string,int, string,int, string,int, string)));
+                yield return MakeValueTupleTypeTest(new Type[] { typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string) }, typeof((int, string, int, string, int, string, int, string, int, string)));
                 static object?[] MakeValueTupleTypeTest(IEnumerable<Type> Types, Type Expected)
                     => new object?[] { Types, Expected };
             }
@@ -98,6 +100,7 @@ namespace TupleConverters.Tests
             {
                 yield return FromTest((1, "2"), new object?[] { 1, "2" });
                 yield return FromTest(Tuple.Create(1, "2"), new object?[] { 1, "2" });
+                yield return FromTest(1, new object?[0]);
                 static object?[] FromTest(object? Source, object?[] Expected)
                     => new object?[] { Source, Expected };
             }
@@ -106,5 +109,31 @@ namespace TupleConverters.Tests
         [DynamicData(nameof(FromTestData))]
         public void FromTest(object? Source, object?[] Expected)
             => CollectionAssert.AreEqual(Expected, From(Source));
+        public  static IEnumerable<object?[]> GetTypesTestData
+        {
+            get
+            {
+                yield return GetTypesTest(typeof(ValueTuple<int, string>), new[] { typeof(int), typeof(string) });
+                yield return GetTypesTest(typeof(Tuple<int, string>), new[] { typeof(int), typeof(string) });
+                yield return GetTypesTest(typeof(Tuple<int, string, int, string, int, string, int, Tuple<string, int, string>>), new[] { typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string) });
+                yield return GetTypesTest(typeof(ValueTuple<int, string, int, string, int, string, int, ValueTuple<string, int, string>>), new[] { typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string), typeof(int), typeof(string) });
+                yield return GetTypesTest(typeof(ValueTuple<int, string>), new[] { typeof(int), typeof(string) });
+                static object?[] GetTypesTest(Type TupleType, Type[] Expected)
+                    => new object?[] { TupleType, Expected };
+            }
+        }
+        [TestMethod]
+        [DynamicData(nameof(GetTypesTestData))]
+        public void GetTypesTest(Type TupleType, Type[] Expected)
+        {
+            Console.WriteLine(nameof(Expected) + ":");
+            foreach (var e in Expected)
+                Console.WriteLine(e);
+            var Actual = GetTypes(TupleType).ToArray();
+            Console.WriteLine(nameof(Actual) + ":");
+            foreach (var a in Actual)
+                Console.WriteLine(a);
+            CollectionAssert.AreEqual(Expected, Actual);
+        }
     }
 }

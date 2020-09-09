@@ -11,9 +11,15 @@ namespace TupleConverters.WPF
         public object Convert(object?[] Values, Type TargetType, object? Parameter, CultureInfo culture) 
             => (Values, TargetType, Parameter) switch
         {
-            ({ } _Values,_, Type[] TupleTypes) => To(MakeTupleType(TupleTypes), _Values),
-            ({ } _Values, Type _TargetType, _) when _TargetType.IsTuple() || _TargetType.IsValueTuple()
-                => To(_TargetType, _Values),
+            // Parameter :Type[] Pattern
+            ({ } v,_, Type[] TupleTypes) => To(MakeTupleType(TupleTypes), v),
+            // Parameter Is TupleType Pattern
+            ({ } v,_, Type TupleType) when TupleType.IsTuple() || TupleType.IsValueTuple()
+                => To(TupleType, v),
+            // TargetType Is TupleType Pattern
+            ({ } _Values, Type TupleType, _) when TupleType.IsTuple() || TupleType.IsValueTuple()
+                => To(TupleType, _Values),
+            // Values guess Tuple Type Pattern
             ({ } _Values,_, _) => To(MakeTupleType(_Values.Select(v => v?.GetType() ?? throw new ArgumentException("values has null value.", nameof(Values)))), _Values),
             _ => throw new NotSupportedException("not support pattern."),
         };

@@ -3,19 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TupleConverters", "TupleConverters\TupleConverters.csproj", "{A7024BF6-3AB2-41CC-926F-2DD6358AAB7D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0556FB16-AA58-4DDA-829B-E1371AEB8E3E}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
+		src\Directory.Build.props = src\Directory.Build.props
+		test\Directory.Build.props = test\Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
+		src\Directory.Build.targets = src\Directory.Build.targets
+		test\Directory.Build.targets = test\Directory.Build.targets
+		LICENSE = LICENSE
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TupleConverters.Tests", "TupleConverters.Tests\TupleConverters.Tests.csproj", "{D8D5264B-ED2D-42F2-916B-F8E8A565AA16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TupleConverters", "src\TupleConverters\TupleConverters.csproj", "{A7024BF6-3AB2-41CC-926F-2DD6358AAB7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TupleConverters.WPF", "TupleConverters.WPF\TupleConverters.WPF.csproj", "{B15313A7-C232-424E-B581-7DBF95B5CB5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TupleConverters.Tests", "test\TupleConverters.Tests\TupleConverters.Tests.csproj", "{D8D5264B-ED2D-42F2-916B-F8E8A565AA16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TupleConverters.WPF.Tests", "TupleConverters.WPF.Tests\TupleConverters.WPF.Tests.csproj", "{01410224-24B2-4A35-8D94-D8A54FFA4074}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TupleConverters.WPF", "src\TupleConverters.WPF\TupleConverters.WPF.csproj", "{B15313A7-C232-424E-B581-7DBF95B5CB5F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TupleConverters.WPF.Tests", "test\TupleConverters.WPF.Tests\TupleConverters.WPF.Tests.csproj", "{01410224-24B2-4A35-8D94-D8A54FFA4074}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TupleConverters.WPF.Sample", "sample\TupleConverters.WPF.Sample\TupleConverters.WPF.Sample.csproj", "{17191475-46C9-4341-B898-2A63DA328A2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +46,10 @@ Global
 		{01410224-24B2-4A35-8D94-D8A54FFA4074}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01410224-24B2-4A35-8D94-D8A54FFA4074}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01410224-24B2-4A35-8D94-D8A54FFA4074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17191475-46C9-4341-B898-2A63DA328A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17191475-46C9-4341-B898-2A63DA328A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17191475-46C9-4341-B898-2A63DA328A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17191475-46C9-4341-B898-2A63DA328A2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
