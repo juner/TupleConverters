@@ -32,7 +32,13 @@ namespace TupleConverters
         {
             return (Tuple)To(typeof(Tuple), Value);
         }
-        public static object To(Type TupleType, IEnumerable<object?> Values)
+        public static 
+#if ITUPLE_NOTSUPPORT
+            object
+#else
+            ITuple
+#endif
+            To(Type TupleType, IEnumerable<object?> Values)
         {
 #if ITUPLE_NOTSUPPORT
             var Info = TupleType.GetTypeInfo();
