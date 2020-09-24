@@ -355,16 +355,16 @@ namespace TupleConverters.Extensions
                     && ValueTuple7Enumerable<T>.GetCurrent(Index -7,__Value) is T ___Value => ___Value,
                 (_,var (_,_,_,_,_,_,_,_Value)) 
                     when _Value is TRest RestValue
-                    && GetNestedType(RestValue) is Type NestedType
-                    && NestedType.GetMethod(nameof(GetCurrent), BindingFlags.Static|BindingFlags.NonPublic) is MethodInfo MethodInfo 
-                    => ((T)MethodInfo.Invoke(null, new object[]{ Index -7, _Value }))!,
+                    && GetNestedCurrent(Index, RestValue) is T __Value => __Value,
                 _ => throw new IndexOutOfRangeException()
             };
             internal static T GetNestedCurrent(int Index, TRest Rest)
             {
-                var NestedType = GetNestedType(Rest);
-                var MethodInfo = NestedType.GetMethod(nameof(GetCurrent), BindingFlags.Static | BindingFlags.NonPublic);
-                                   ? ((T)MethodInfo.Invoke(null, new object[] { Index - 7, Rest }))
+                if(!(GetNestedType(Rest).GetMethod(nameof(GetCurrent), BindingFlags.Static | BindingFlags.NonPublic) is MethodInfo Method))
+                    throw new InvalidOperationException();
+                if(!(Method.Invoke(null, new object[] { Index - 7, Rest }) is T Value))
+                    throw new InvalidOperationException();
+                return Value;
 }
 
             internal static Type GetNestedType(TRest Value) 
