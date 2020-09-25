@@ -22,7 +22,7 @@ namespace TupleConverters.Extensions
             public ValueTuple1Enumerator<T> GetEnumerator() => new ValueTuple1Enumerator<T>(Value);
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValueTuple1Enumerator2<T>(Value);
             IEnumerator IEnumerable.GetEnumerator() => new ValueTuple1Enumerator2<T>(Value);
-            internal static T GetCurrent(int Index, ValueTuple<T> Value) => (Index,Value) switch {
+            public static T GetCurrent(int Index, ValueTuple<T> Value) => (Index,Value) switch {
                 (0,var (_Value)) => _Value,
                 _ => throw new IndexOutOfRangeException()
             };
@@ -62,7 +62,7 @@ namespace TupleConverters.Extensions
             public ValueTuple2Enumerator<T> GetEnumerator() => new ValueTuple2Enumerator<T>(Value);
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValueTuple2Enumerator2<T>(Value);
             IEnumerator IEnumerable.GetEnumerator() => new ValueTuple2Enumerator2<T>(Value);
-            internal static T GetCurrent(int Index, ValueTuple<T,T> Value) => (Index,Value) switch {
+            public static T GetCurrent(int Index, ValueTuple<T,T> Value) => (Index,Value) switch {
                 (0,(T _Value,_)) => _Value,
                 (1,(_,T _Value)) => _Value,
                 _ => throw new IndexOutOfRangeException()
@@ -103,7 +103,7 @@ namespace TupleConverters.Extensions
             public ValueTuple3Enumerator<T> GetEnumerator() => new ValueTuple3Enumerator<T>(Value);
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValueTuple3Enumerator2<T>(Value);
             IEnumerator IEnumerable.GetEnumerator() => new ValueTuple3Enumerator2<T>(Value);
-            internal static T GetCurrent(int Index, ValueTuple<T,T,T> Value) => (Index,Value)switch {
+            public static T GetCurrent(int Index, ValueTuple<T,T,T> Value) => (Index,Value)switch {
                 (0,(T _Value,_,_)) => _Value,
                 (1,(_,T _Value,_)) => _Value,
                 (2,(_,_,T _Value)) => _Value,
@@ -145,7 +145,7 @@ namespace TupleConverters.Extensions
             public ValueTuple4Enumerator<T> GetEnumerator() => new ValueTuple4Enumerator<T>(Value);
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValueTuple4Enumerator2<T>(Value);
             IEnumerator IEnumerable.GetEnumerator() => new ValueTuple4Enumerator2<T>(Value);
-            internal static T GetCurrent(int Index, ValueTuple<T,T,T,T> Value) => (Index,Value)switch {
+            public static T GetCurrent(int Index, ValueTuple<T,T,T,T> Value) => (Index,Value)switch {
                 (0,(T _Value,_,_,_)) => _Value,
                 (1,(_,T _Value,_,_)) => _Value,
                 (2,(_,_,T _Value,_)) => _Value,
@@ -188,7 +188,7 @@ namespace TupleConverters.Extensions
             public ValueTuple5Enumerator<T> GetEnumerator() => new ValueTuple5Enumerator<T>(Value);
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValueTuple5Enumerator2<T>(Value);
             IEnumerator IEnumerable.GetEnumerator() => new ValueTuple5Enumerator2<T>(Value);
-            internal static T GetCurrent(int Index, ValueTuple<T,T,T,T,T> Value) => (Index,Value)switch {
+            public static T GetCurrent(int Index, ValueTuple<T,T,T,T,T> Value) => (Index,Value)switch {
                 (0,(T _Value,_,_,_,_)) => _Value,
                 (1,(_,T _Value,_,_,_)) => _Value,
                 (2,(_,_,T _Value,_,_)) => _Value,
@@ -232,7 +232,7 @@ namespace TupleConverters.Extensions
             public ValueTuple6Enumerator<T> GetEnumerator() => new ValueTuple6Enumerator<T>(Value);
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValueTuple6Enumerator2<T>(Value);
             IEnumerator IEnumerable.GetEnumerator() => new ValueTuple6Enumerator2<T>(Value);
-            internal static T GetCurrent(int Index, ValueTuple<T,T,T,T,T,T> Value) => (Index,Value)switch {
+            public static T GetCurrent(int Index, ValueTuple<T,T,T,T,T,T> Value) => (Index,Value)switch {
                 (0,(T _Value,_,_,_,_,_)) => _Value,
                 (1,(_,T _Value,_,_,_,_)) => _Value,
                 (2,(_,_,T _Value,_,_,_)) => _Value,
@@ -278,7 +278,7 @@ namespace TupleConverters.Extensions
             public ValueTuple7Enumerator<T> GetEnumerator() => new ValueTuple7Enumerator<T>(Value);
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValueTuple7Enumerator2<T>(Value);
             IEnumerator IEnumerable.GetEnumerator() => new ValueTuple7Enumerator2<T>(Value);
-            internal static T GetCurrent(int Index, ValueTuple<T,T,T,T,T,T,T> Value) => (Index,Value)switch {
+            public static T GetCurrent(int Index, ValueTuple<T,T,T,T,T,T,T> Value) => (Index,Value)switch {
                 (0,(T _Value,_,_,_,_,_,_)) => _Value,
                 (1,(_,T _Value,_,_,_,_,_)) => _Value,
                 (2,(_,_,T _Value,_,_,_,_)) => _Value,
@@ -324,7 +324,7 @@ namespace TupleConverters.Extensions
             public ValueTuple8Enumerator<T,TRest> GetEnumerator() => new ValueTuple8Enumerator<T,TRest>(Value);
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValueTuple8Enumerator2<T,TRest>(Value);
             IEnumerator IEnumerable.GetEnumerator() => new ValueTuple8Enumerator2<T,TRest>(Value);
-            internal static T GetCurrent(int Index, ValueTuple<T,T,T,T,T,T,T,TRest> Value) => Index switch {
+            public static T GetCurrent(int Index, ValueTuple<T,T,T,T,T,T,T,TRest> Value) => Index switch {
                 0 => Value.Item1,
                 1 => Value.Item2,
                 2 => Value.Item3,
@@ -350,22 +350,22 @@ namespace TupleConverters.Extensions
                     && GetNestedCurrent(Index, RestValue) is T __Value => __Value,
                 _ => throw new IndexOutOfRangeException()
             };
-            internal static T GetNestedCurrent(int Index, TRest Rest)
+            public static T GetNestedCurrent(int Index, TRest Rest)
             {
-                if(!(GetNestedType(Rest).GetMethod(nameof(GetCurrent), BindingFlags.Static | BindingFlags.NonPublic) is MethodInfo Method))
+                if(!(GetNestedType(Rest).GetMethod(nameof(GetCurrent)) is MethodInfo Method))
                     throw new InvalidOperationException();
                 if(!(Method.Invoke(null, new object[] { Index - 7, Rest }) is T Value))
                     throw new InvalidOperationException();
                 return Value;
             }
 
-            internal static Type GetNestedType(TRest Value) 
+            public static Type GetNestedType(TRest Value) 
                 => Value.GetType() is Type Type
                     && Type.GetGenericTypeDefinition() == typeof(Tuple<,,,,,,,>) 
                     && Type.GetGenericArguments() is Type[] Types
                     && typeof(ValueTuple8Enumerable<,>).MakeGenericType(Types.First(), Types.Last()) is Type NestedType 
                     ? NestedType : throw new InvalidOperationException();
-            internal static int GetLength(ValueTuple<T,T,T,T,T,T,T,TRest> Value) => Value switch {
+            public static int GetLength(ValueTuple<T,T,T,T,T,T,T,TRest> Value) => Value switch {
                 _ when Value.Rest is ValueTuple<T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple1Enumerable<T>.Length,
                 _ when Value.Rest is ValueTuple<T,T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple2Enumerable<T>.Length,
                 _ when Value.Rest is ValueTuple<T,T,T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple3Enumerable<T>.Length,
@@ -375,9 +375,9 @@ namespace TupleConverters.Extensions
                 _ when Value.Rest is ValueTuple<T,T,T,T,T,T,T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple7Enumerable<T>.Length,
                 _ => ValueTuple7Enumerable<T>.Length + GetNestedLength(Value.Rest),
             };
-            internal static int GetNestedLength(TRest Rest)
+            public static int GetNestedLength(TRest Rest)
             {
-                if(!(GetNestedType(Rest).GetMethod(nameof(GetLength), BindingFlags.Static | BindingFlags.NonPublic) is MethodInfo Method))
+                if(!(GetNestedType(Rest).GetMethod(nameof(GetLength)) is MethodInfo Method))
                     throw new InvalidOperationException();
                 if(!(Method.Invoke(null, new object[] { Rest }) is int Value))
                     throw new InvalidOperationException();
@@ -411,6 +411,19 @@ namespace TupleConverters.Extensions
             void IDisposable.Dispose(){}
             bool IEnumerator.MoveNext() => ++Index < ValueTuple8Enumerable<T,TRest>.GetLength(Value);
             void IEnumerator.Reset() => Index = -1;
+        }
+    }
+    public static class InternalExtensions
+    {
+        public static MethodInfo GetMethod(this Type Type, string MethodName)
+        {
+            var Info = Type.GetTypeInfo();
+            return Info.GetDeclaredMethod(MethodName);
+        }
+        public static Type[] GetGenericArguments(this Type Type)
+        {
+            var Info = Type.GetTypeInfo();
+            return Info.GetGenericArguments();
         }
     }
 }
