@@ -4,11 +4,12 @@
 		<TargetFrameworks>netcoreapp3.1;netcoreapp2.1;net45;net461;net48</TargetFrameworks>
 		<IsPackable>false</IsPackable>
 		<WarningsAsErrors>False</WarningsAsErrors>
+		<LangVersion>9.0</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="MSTest.TestAdapter"/>
+		<PackageReference Include="MSTest.TestAdapter" />
 		<PackageReference Include="MSTest.TestFramework" />
 		<PackageReference Include="coverlet.collector" />
 	</ItemGroup>

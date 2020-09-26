@@ -32,7 +32,7 @@ namespace TupleConverters
         {
             return (Tuple)To(typeof(Tuple), Value);
         }
-        public static 
+        public static
 #if ITUPLE_NOTSUPPORT
             object
 #else

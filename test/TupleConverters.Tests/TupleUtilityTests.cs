@@ -109,7 +109,7 @@ namespace TupleConverters.Tests
         [DynamicData(nameof(FromTestData))]
         public void FromTest(object? Source, object?[] Expected)
             => CollectionAssert.AreEqual(Expected, From(Source));
-        public  static IEnumerable<object?[]> GetTypesTestData
+        public static IEnumerable<object?[]> GetTypesTestData
         {
             get
             {
