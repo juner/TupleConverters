@@ -4,7 +4,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 #if !ITUPLE_NOTSUPPORT
 using System.Runtime.CompilerServices;
@@ -318,7 +317,7 @@ namespace TupleConverters.Extensions
         }
         public class ValueTuple7Enumerator2<T> : IEnumerator<T>
         {
-            int Index;
+            internal int Index;
             readonly ValueTuple<T, T, T, T, T, T, T> Value;
             public ValueTuple7Enumerator2(ValueTuple<T, T, T, T, T, T, T> Value)
                 => (this.Value, Index) = (Value, -1);
@@ -367,39 +366,51 @@ namespace TupleConverters.Extensions
                 _ => throw new IndexOutOfRangeException()
             };
             public static T GetNestedCurrent(int Index, TRest Rest)
+                => (T)GetRestEnumerableType().GetMethod(nameof(GetCurrent)).Invoke(null, new object[] { Index - ValueTuple7Enumerable<T>.Length, Rest });
+            internal static Type GetRestEnumerableType()
             {
-                if (!(GetNestedType(Rest).GetMethod(nameof(GetCurrent)) is MethodInfo Method))
+                var RestType = typeof(TRest);
+                if (RestType == typeof(ValueTuple<T>))
+                    return typeof(ValueTuple1Enumerable<T>);
+                else if (RestType == typeof(ValueTuple<T, T>))
+                    return typeof(ValueTuple2Enumerable<T>);
+                else if (RestType == typeof(ValueTuple<T, T, T>))
+                    return typeof(ValueTuple3Enumerable<T>);
+                else if (RestType == typeof(ValueTuple<T, T, T, T>))
+                    return typeof(ValueTuple4Enumerable<T>);
+                else if (RestType == typeof(ValueTuple<T, T, T, T, T>))
+                    return typeof(ValueTuple5Enumerable<T>);
+                else if (RestType == typeof(ValueTuple<T, T, T, T, T, T>))
+                    return typeof(ValueTuple6Enumerable<T>);
+                else if (RestType == typeof(ValueTuple<T, T, T, T, T, T, T>))
+                    return typeof(ValueTuple7Enumerable<T>);
+                if (RestType.GetGenericTypeDefinition() != typeof(ValueTuple<,,,,,,,>))
                     throw new InvalidOperationException();
-                if (!(Method.Invoke(null, new object[] { Index - 7, Rest }) is T Value))
-                    throw new InvalidOperationException();
-                return Value;
+                var GenericArguments = RestType.GetGenericArguments();
+                return typeof(ValueTuple8Enumerable<,>).MakeGenericType(GenericArguments[0], GenericArguments[GenericArguments.Length - 1]);
             }
-
-            public static Type GetNestedType(TRest Value)
-                => Value.GetType() is Type Type
-                    && Type.GetGenericTypeDefinition() == typeof(Tuple<,,,,,,,>)
-                    && Type.GetGenericArguments() is Type[] Types
-                    && typeof(ValueTuple8Enumerable<,>).MakeGenericType(Types.First(), Types.Last()) is Type NestedType
-                    ? NestedType : throw new InvalidOperationException();
-            public static int GetLength(ValueTuple<T, T, T, T, T, T, T, TRest> Value) => Value switch
+            public static int GetLength()
             {
-                _ when Value.Rest is ValueTuple<T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple1Enumerable<T>.Length,
-                _ when Value.Rest is ValueTuple<T, T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple2Enumerable<T>.Length,
-                _ when Value.Rest is ValueTuple<T, T, T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple3Enumerable<T>.Length,
-                _ when Value.Rest is ValueTuple<T, T, T, T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple4Enumerable<T>.Length,
-                _ when Value.Rest is ValueTuple<T, T, T, T, T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple5Enumerable<T>.Length,
-                _ when Value.Rest is ValueTuple<T, T, T, T, T, T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple6Enumerable<T>.Length,
-                _ when Value.Rest is ValueTuple<T, T, T, T, T, T, T> _ => ValueTuple7Enumerable<T>.Length + ValueTuple7Enumerable<T>.Length,
-                _ => ValueTuple7Enumerable<T>.Length + GetNestedLength(Value.Rest),
-            };
-            public static int GetNestedLength(TRest Rest)
-            {
-                if (!(GetNestedType(Rest).GetMethod(nameof(GetLength)) is MethodInfo Method))
+                var RestType = typeof(TRest);
+                if (RestType == typeof(ValueTuple<T>))
+                    return ValueTuple7Enumerable<T>.Length + ValueTuple1Enumerable<T>.Length;
+                else if (RestType == typeof(ValueTuple<T, T>))
+                    return ValueTuple7Enumerable<T>.Length + ValueTuple2Enumerable<T>.Length;
+                else if (RestType == typeof(ValueTuple<T, T, T>))
+                    return ValueTuple7Enumerable<T>.Length + ValueTuple3Enumerable<T>.Length;
+                else if (RestType == typeof(ValueTuple<T, T, T, T>))
+                    return ValueTuple7Enumerable<T>.Length + ValueTuple4Enumerable<T>.Length;
+                else if (RestType == typeof(ValueTuple<T, T, T, T, T>))
+                    return ValueTuple7Enumerable<T>.Length + ValueTuple5Enumerable<T>.Length;
+                else if (RestType == typeof(ValueTuple<T, T, T, T, T, T>))
+                    return ValueTuple7Enumerable<T>.Length + ValueTuple6Enumerable<T>.Length;
+                else if (RestType == typeof(ValueTuple<T, T, T, T, T, T, T>))
+                    return ValueTuple7Enumerable<T>.Length + ValueTuple7Enumerable<T>.Length;
+                else if (RestType.GetGenericTypeDefinition() != typeof(ValueTuple<,,,,,,,>))
                     throw new InvalidOperationException();
-                if (!(Method.Invoke(null, new object[] { Rest }) is int Value))
-                    throw new InvalidOperationException();
-                return Value;
+                return ValueTuple7Enumerable<T>.Length + GetNestedLength();
             }
+            public static int GetNestedLength() => (int)GetRestEnumerableType().GetMethod(nameof(GetLength)).Invoke(null, null);
         }
         public struct ValueTuple8Enumerator<T, TRest> : IEnumerator<T>
             where TRest : struct
@@ -408,7 +419,7 @@ namespace TupleConverters.Extensions
             readonly int Length;
             readonly ValueTuple<T, T, T, T, T, T, T, TRest> Value;
             public ValueTuple8Enumerator(ValueTuple<T, T, T, T, T, T, T, TRest> Value)
-                => (this.Value, Index, Length) = (Value, -1, ValueTuple8Enumerable<T, TRest>.GetLength(Value));
+                => (this.Value, Index, Length) = (Value, -1, ValueTuple8Enumerable<T, TRest>.GetLength());
             public T Current => ValueTuple8Enumerable<T, TRest>.GetCurrent(Index, Value);
             T IEnumerator<T>.Current => Current;
             object? IEnumerator.Current => Current;
@@ -416,19 +427,19 @@ namespace TupleConverters.Extensions
             public bool MoveNext() => ++Index < Length;
             void IEnumerator.Reset() => Index = -1;
         }
-        public class ValueTuple8Enumerator2<T, TRest> : IEnumerator<T>
+        internal class ValueTuple8Enumerator2<T, TRest> : IEnumerator<T>
             where TRest : struct
         {
             int Index;
             readonly int Length;
             readonly ValueTuple<T, T, T, T, T, T, T, TRest> Value;
             public ValueTuple8Enumerator2(ValueTuple<T, T, T, T, T, T, T, TRest> Value)
-                => (this.Value, Index, Length) = (Value, -1, ValueTuple8Enumerable<T, TRest>.GetLength(Value));
+                => (this.Value, Index, Length) = (Value, -1, ValueTuple8Enumerable<T, TRest>.GetLength());
             public T Current => ValueTuple8Enumerable<T, TRest>.GetCurrent(Index, Value);
             T IEnumerator<T>.Current => Current;
             object? IEnumerator.Current => Current;
             void IDisposable.Dispose() { }
-            public bool MoveNext() => ++Index < ValueTuple8Enumerable<T, TRest>.GetLength(Value);
+            public bool MoveNext() => ++Index < Length;
             void IEnumerator.Reset() => Index = -1;
         }
     }
