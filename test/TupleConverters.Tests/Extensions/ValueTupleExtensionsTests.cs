@@ -1,8 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TupleConverters.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TupleConverters.Extensions.Tests
 {

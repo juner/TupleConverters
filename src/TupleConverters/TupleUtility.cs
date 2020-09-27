@@ -326,7 +326,7 @@ namespace TupleConverters
             }
         }
 #else
-        public static IEnumerable<object?> GetEnumerable(this ITuple Source)
+        internal static IEnumerable<object?> GetEnumerable(this ITuple Source)
         {
             for (var i = 0; i < Source.Length; i++)
                 yield return Source[i];
